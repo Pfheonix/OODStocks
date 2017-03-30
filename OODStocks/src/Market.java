@@ -13,7 +13,7 @@ public class Market {
     private ArrayList<Stock> stocks;
     private HashMap<String, Integer[]> index;
     private StockFactory issuer;
-    private Market currentMarket;
+    private static Market currentMarket;
     private Investor investor;
 
     private Market(){
@@ -29,7 +29,7 @@ public class Market {
         index.put(stocks.get(temp[0]).getSymbol(), temp);
     }
 
-    public Market getMarket(){
+    public static Market getMarket(){
         if(currentMarket != null){
             return currentMarket;
         }
@@ -65,5 +65,17 @@ public class Market {
         investor.purchaseShares(temp, count, temp.getPrice() * count);
 
 
+    }
+
+    public ArrayList getStocks(){
+        return this.stocks;
+    }
+
+    public HashMap getIndex(){
+        return this.index;
+    }
+
+    public Investor getInvestor(){
+        return this.investor;
     }
 }

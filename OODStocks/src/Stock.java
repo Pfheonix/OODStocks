@@ -9,7 +9,7 @@ public class Stock {
     Stock(){
         StringBuilder temp = new StringBuilder();
         for(int i = 0; i < 4; ++i){
-            temp.append((Math.random() * 26) + 65);
+            temp.append((char)((Math.random() * 26) + 65));
         }
         this.symbol = temp.toString();
         this.price = (float)((Math.random() * 10) + 0.01);
