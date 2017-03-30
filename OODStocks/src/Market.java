@@ -64,7 +64,7 @@ public class Market {
 
         investor.purchaseShares(temp, count, temp.getPrice() * count);
 
-
+        input.close();
     }
 
     public ArrayList getStocks(){

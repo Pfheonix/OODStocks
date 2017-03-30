@@ -14,6 +14,10 @@ public class testMarket {
 
     static void printMarket(Market market){
         ArrayList<Stock> temp = market.getStocks();
+        if(temp == null){
+            System.out.printf("ArrayList not initialized.\n");
+            return;
+        }
 
         System.out.printf("Index\tSymbol\tPrice\t6MoHi\t6MoLo\n");
 
