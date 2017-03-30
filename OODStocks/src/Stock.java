@@ -1,12 +1,12 @@
-/**
- * Created by Pfheonix on 3/26/2017.
+/*
+ * Stock class, which contains information about a stock.
  */
 public class Stock {
-    private String name, symbol;
+    private String symbol;
     private float sixMoHi, sixMoLo, price, marketCap;
-    private int number;
+    private int shareCount;
 
-    protected Stock(){
+    Stock(){
         StringBuilder temp = new StringBuilder();
         for(int i = 0; i < 4; ++i){
             temp.append((Math.random() * 26) + 65);
@@ -14,35 +14,31 @@ public class Stock {
         this.symbol = temp.toString();
         this.price = (float)((Math.random() * 10) + 0.01);
         this.sixMoHi = this.sixMoLo = this.price;
-        this.number = (int)(((Math.random() * 50) + 50) * Math.pow(10, 5));
-        this.marketCap = number * price;
+        this.shareCount = (int)(((Math.random() * 50) + 50) * Math.pow(10, 5));
+        this.marketCap = shareCount * price;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getSymbol() {
+    String getSymbol() {
         return symbol;
     }
 
-    public float getSixMoHi() {
+    float getSixMoHi() {
         return sixMoHi;
     }
 
-    public float getSixMoLo() {
+    float getSixMoLo() {
         return sixMoLo;
     }
 
-    public float getPrice() {
+    float getPrice() {
         return price;
     }
 
-    public float getMarketCap() {
+    float getMarketCap() {
         return marketCap;
     }
 
-    public int getNumber() {
-        return number;
+    int getShareCount() {
+        return shareCount;
     }
 }

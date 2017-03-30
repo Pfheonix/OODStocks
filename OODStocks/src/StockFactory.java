@@ -1,13 +1,13 @@
 /**
- * Created by Pfheonix on 3/26/2017.
+ * Simple factory to create stocks.
  */
-public class StockFactory {
+class StockFactory {
 
-    public StockFactory(){
+    StockFactory(){
 
     }
 
-    protected Stock initialPublicOffering(){
+    Stock initialPublicOffering(){
         return new Stock();
     }
 }
