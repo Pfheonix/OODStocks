@@ -22,25 +22,26 @@ public class Stock {
         return symbol;
     }
 
-    float getSixMoHi() {
+    double getSixMoHi() {
         return sixMoHi;
     }
 
-    float getSixMoLo() {
+    double getSixMoLo() {
         return sixMoLo;
     }
 
-    float getPrice() {
+    double getPrice() {
         return price;
     }
 
-    float getMarketCap() {
+    double getMarketCap() {
         return marketCap;
     }
 
     int getShareCount() {
         return shareCount;
     }
+    
     void updateSharePrice() {
         price = price + (Math.random() - .5)
         if price > sicMoHi
