@@ -12,7 +12,7 @@ public class Stock {
             temp.append((char)((Math.random() * 26) + 65));
         }
         this.symbol = temp.toString();
-        this.price = Math.random() * 10) + 0.01;
+        this.price = (Math.random() * 10) + 0.01;
         this.sixMoHi = this.sixMoLo = this.price;
         this.shareCount = (int)(((Math.random() * 50) + 50) * Math.pow(10, 5));
         this.marketCap = shareCount * price;
