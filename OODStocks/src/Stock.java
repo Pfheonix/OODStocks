@@ -3,7 +3,7 @@
  */
 public class Stock {
     private String symbol;
-    private float sixMoHi, sixMoLo, price, marketCap;
+    private double sixMoHi, sixMoLo, price, marketCap;
     private int shareCount;
 
     Stock(){
@@ -12,7 +12,7 @@ public class Stock {
             temp.append((char)((Math.random() * 26) + 65));
         }
         this.symbol = temp.toString();
-        this.price = (float)((Math.random() * 10) + 0.01);
+        this.price = Math.random() * 10) + 0.01;
         this.sixMoHi = this.sixMoLo = this.price;
         this.shareCount = (int)(((Math.random() * 50) + 50) * Math.pow(10, 5));
         this.marketCap = shareCount * price;
@@ -22,23 +22,31 @@ public class Stock {
         return symbol;
     }
 
-    float getSixMoHi() {
+    double getSixMoHi() {
         return sixMoHi;
     }
 
-    float getSixMoLo() {
+    double getSixMoLo() {
         return sixMoLo;
     }
 
-    float getPrice() {
+    double getPrice() {
         return price;
     }
 
-    float getMarketCap() {
+    double getMarketCap() {
         return marketCap;
     }
 
     int getShareCount() {
         return shareCount;
+    }
+    
+    void updateSharePrice() {
+        price = price + (Math.random() - .5)
+        if price > sicMoHi
+            sixMoHi = price;
+        if price < sixMoLo
+            sixMoLo = price;
     }
 }
