@@ -43,10 +43,10 @@ public class Stock {
     }
     
     void updateSharePrice() {
-        price = price + (Math.random() - .5)
-        if price > sicMoHi
-            sixMoHi = price;
-        if price < sixMoLo
-            sixMoLo = price;
+        this.price = this.price + (Math.random() - .5);
+        if (this.price > this.sixMoHi)
+            this.sixMoHi = this.price;
+        if (this.price < this.sixMoLo)
+            this.sixMoLo = this.price;
     }
 }
