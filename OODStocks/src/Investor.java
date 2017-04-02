@@ -1,16 +1,21 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /*
  * Investor class, which contains the user's profile as an investor.
+ * The HashMap ownedStocks contains the Stock's symbol as a string, and then an integer value, used to determine the
+ * number of shares owned. AcctBalance is the available capital to purchase stocks, while holdings is the overall value
+ * of the held investments.
  */
 public class Investor {
 
-    private double acctBalance;
+    private double acctBalance, holdings;
     private HashMap<String, Integer> ownedStocks;
 
     Investor(){
         this.acctBalance = 10000;
         this.ownedStocks = new HashMap<String, Integer>();
+        this.holdings = 0;
     }
 
     public double getBalance(){
@@ -21,12 +26,27 @@ public class Investor {
         return ownedStocks.getOrDefault(key, 0);
     }
 
-    void purchaseShares(Stock stock, int count, double cost){
+    public HashMap<String, Integer> getOwnedStocks(){ return this.ownedStocks; }
+
+    public void purchaseShares(Stock stock, int count, double cost){
         if(cost > this.acctBalance){
             System.out.printf("Your account balance is not sufficient.\nPlease deposit more, or reduce the number of shares.\n");
             return;
         }
         this.acctBalance -= cost;
         ownedStocks.put(stock.getSymbol(), count);
+        this.holdings += cost;
+    }
+
+    public double getHoldings(){
+        return this.holdings;
+    }
+
+    public void updateHoldings(double updatedHoldings){
+        this.holdings = updatedHoldings;
+    }
+
+    public void updateBalance(double deposit){
+        this.acctBalance += deposit;
     }
 }
