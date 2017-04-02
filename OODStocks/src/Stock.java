@@ -2,6 +2,9 @@ import java.util.ArrayList;
 
 /*
  * Stock class, which contains information about a stock.
+ * The symbol is used to refer to the stock in many different contexts, while the highs, lows, and marketcap help
+ * describe the health of the company selling the stock. ShareCount is self explanatory, and the price history is used
+ * for graphing.
  */
 public class Stock {
     private String symbol;
@@ -50,10 +53,15 @@ public class Stock {
     //Update the prices, as well as the priceHistory.
     void updateSharePrice() {
         this.price = this.price + (Math.random() - .5);
-        if (this.price > this.sixMoHi)
+        if (this.price <= 0){
+            return;
+        }
+        if (this.price > this.sixMoHi) {
             this.sixMoHi = this.price;
-        if (this.price < this.sixMoLo)
+        }
+        if (this.price < this.sixMoLo) {
             this.sixMoLo = this.price;
+        }
 
         this.priceHistory.add(this.price);
     }

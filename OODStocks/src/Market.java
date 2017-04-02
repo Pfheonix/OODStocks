@@ -1,5 +1,5 @@
 /*
- * Market class for OOD.
+ * Market class for OOD. It uses a singleton construction, allowing
  */
 
 import java.util.HashMap;
@@ -32,13 +32,13 @@ public class Market {
 
         double sum = 0;
 
-        for(int i = 0; i < stocks.size(); ++i){
-            sum += stocks.get(i).getPrice();
+        for(Stock stock : stocks){
+            sum += stock.getPrice();
         }
         totalValue.add(sum);
     }
 
-    public static Market getMarket(){
+    static Market getMarket(){
         if(currentMarket != null){
             return currentMarket;
         }
@@ -46,7 +46,7 @@ public class Market {
         return currentMarket;
     }
 
-    public void createStock(){
+    void createStock(){
         Integer[] temp = new Integer[2];
 
         temp[0] = this.stocks.size();
@@ -76,7 +76,7 @@ public class Market {
         input.close();
     }
 
-    public ArrayList getStocks(){
+    ArrayList getStocks(){
         return this.stocks;
     }
 
@@ -84,31 +84,35 @@ public class Market {
         return this.shareAvailability;
     }
 
-    public Investor getInvestor(){
+    Investor getInvestor(){
         return this.investor;
     }
 
-    public void updateMarket(){
+    void updateMarket(){
         double sum = 0;
         for(int i = 0; i < stocks.size(); ++i){
             stocks.get(i).updateSharePrice();
-            sum += stocks.get(i).getPrice();
+            if(stocks.get(i).getPrice() <= 0){
+                stocks.remove(i);
+            } else {
+                sum += stocks.get(i).getPrice();
+            }
         }
 
         totalValue.add(sum);
 
         sum = 0;
 
-        for(int i = 0; i < stocks.size(); ++i){
-            if(investor.getOwnedShares(stocks.get(i).getSymbol()) != 0){
-                sum += investor.getOwnedShares(stocks.get(i).getSymbol()) * stocks.get(i).getPrice();
+        for(Stock stock : stocks){
+            if(investor.getOwnedShares(stock.getSymbol()) != 0){
+                sum += investor.getOwnedShares(stock.getSymbol()) * stock.getPrice();
             }
         }
 
         investor.updateHoldings(sum);
     }
 
-    public ArrayList getTotalValue(){
+    ArrayList getTotalValue(){
         return this.totalValue;
     }
 }

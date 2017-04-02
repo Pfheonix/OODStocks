@@ -18,17 +18,17 @@ public class Investor {
         this.holdings = 0;
     }
 
-    public double getBalance(){
+    double getBalance(){
         return this.acctBalance;
     }
 
-    public int getOwnedShares(String key){
+    int getOwnedShares(String key){
         return ownedStocks.getOrDefault(key, 0);
     }
 
     public HashMap<String, Integer> getOwnedStocks(){ return this.ownedStocks; }
 
-    public void purchaseShares(Stock stock, int count, double cost){
+    void purchaseShares(Stock stock, int count, double cost){
         if(cost > this.acctBalance){
             System.out.printf("Your account balance is not sufficient.\nPlease deposit more, or reduce the number of shares.\n");
             return;
@@ -42,7 +42,7 @@ public class Investor {
         return this.holdings;
     }
 
-    public void updateHoldings(double updatedHoldings){
+    void updateHoldings(double updatedHoldings){
         this.holdings = updatedHoldings;
     }
 
