@@ -13,6 +13,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -34,8 +35,19 @@ public class testMarket extends Application{
         stage.setMinHeight(768);
         stage.setMinWidth(1024);
         GridPane root = new GridPane();
-        root.getChildren().add(testMarket.populateText(temp));
-        root.add(testMarket.populateChart(market.getTotalValue()), 1, 0);
+        HBox tabBar = new HBox();
+        tabBar.getChildren().add(0, new Button("Market"));
+        tabBar.getChildren().add(1, new Button("Rising 5"));
+        tabBar.getChildren().add(2, new Button("Falling 10"));
+        tabBar.getChildren().add(3, new Button("My Stocks"));
+        tabBar.setSpacing(15);
+        root.add(tabBar, 0, 0);
+        root.setAlignment(Pos.CENTER);
+        root.setVgap(15);
+
+
+        root.add(testMarket.populateText(temp), 0, 1);
+        root.add(testMarket.populateChart(market.getTotalValue()), 1, 1);
 
 
 
