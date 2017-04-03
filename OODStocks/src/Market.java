@@ -18,8 +18,11 @@ public class Market {
     private ArrayList<Double> totalValue;
 
     private Market(){
+        //Initializing a temporary Integer array, to hold the index in the stocks ArrayList and the number of shares
+        //available for each stock.
         Integer[] temp = new Integer[2];
 
+        //Initializing each field, creating a stock, and filling each field with a value
         investor = new Investor();
         issuer = new StockFactory();
         shareAvailability = new HashMap<String, Integer[]>();
@@ -32,12 +35,14 @@ public class Market {
 
         double sum = 0;
 
+        //Foreach stock, get the price, add it, then set it as a data point in totalValue.
         for(Stock stock : stocks){
             sum += stock.getPrice();
         }
         totalValue.add(sum);
     }
 
+    //Getting a Market, which acts as a singleton.
     static Market getMarket(){
         if(currentMarket != null){
             return currentMarket;
@@ -46,6 +51,7 @@ public class Market {
         return currentMarket;
     }
 
+    //Creating a stock. Primarily used before the UpdateMarket method.
     void createStock(){
         Integer[] temp = new Integer[2];
 
@@ -55,6 +61,7 @@ public class Market {
         this.shareAvailability.put(this.stocks.get(temp[0]).getSymbol(), temp);
     }
 
+    //Selling shares to the investor's portfolio.
     public void sellShares(String symbol, int count){
         Stock temp = stocks.get(shareAvailability.get(symbol)[0]);
         Scanner input = new Scanner(System.in);
@@ -88,8 +95,12 @@ public class Market {
         return this.investor;
     }
 
+    //Update the value of the market, the individual stocks, et cetera.
     void updateMarket(){
         double sum = 0;
+
+        //For all stocks, update the price, remove them if they're 0 or less, and then add them to a sum.
+        //Said sum will then be added as a data point to the totalValue.
         for(int i = 0; i < stocks.size(); ++i){
             stocks.get(i).updateSharePrice();
             if(stocks.get(i).getPrice() <= 0){
@@ -103,6 +114,7 @@ public class Market {
 
         sum = 0;
 
+        //Update the investor's holdings.
         for(Stock stock : stocks){
             if(investor.getOwnedShares(stock.getSymbol()) != 0){
                 sum += investor.getOwnedShares(stock.getSymbol()) * stock.getPrice();
@@ -112,6 +124,7 @@ public class Market {
         investor.updateHoldings(sum);
     }
 
+    //Duh?
     ArrayList getTotalValue(){
         return this.totalValue;
     }
