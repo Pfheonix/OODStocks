@@ -42,6 +42,33 @@ public class Market {
         totalValue.add(sum);
     }
 
+    //Start Iterator Pattern
+    //MarketStocks function will be used to disaplay the list of all of the items in the market
+    public Iterator getStocks() { return new MarketStocks(); }
+
+    private class MarketStocks implements Iterator {
+        int index;
+
+        //This will return the stocks one at a time which should make
+        // it easier to put the stocks into the GUI's array list
+        @Override
+        public Object next() {
+            if (this.hasNext()) {
+                return stocks.get(index++);
+            }
+            return null;
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (index < stocks.size()) {
+                return true;
+            }
+            return false;
+        }
+    }
+//End Iterator Pattern
+    
     //Getting a Market, which acts as a singleton.
     static Market getMarket(){
         if(currentMarket != null){
