@@ -28,14 +28,21 @@ public class Investor {
 
     public HashMap<String, Integer> getOwnedStocks(){ return this.ownedStocks; }
 
+    //Purchasing
     void purchaseShares(Stock stock, int count, double cost){
         if(cost > this.acctBalance){
             System.out.printf("Your account balance is not sufficient.\nPlease deposit more, or reduce the number of shares.\n");
             return;
         }
-        this.acctBalance -= cost;
-        ownedStocks.put(stock.getSymbol(), count);
-        this.holdings += cost;
+        if(this.ownedStocks.containsKey(stock.getSymbol())){
+            this.acctBalance -= cost;
+            ownedStocks.replace(stock.getSymbol(), ownedStocks.get(stock.getSymbol()) + count);
+            this.holdings += cost;
+        } else {
+            this.acctBalance -= cost;
+            ownedStocks.put(stock.getSymbol(), count);
+            this.holdings += cost;
+        }
     }
 
     public double getHoldings(){

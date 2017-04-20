@@ -55,6 +55,10 @@ public class Stock {
         return shareCount;
     }
 
+    double getPercentGrowth(){
+        return this.percentGrowth;
+    }
+
     //Update the prices, as well as the priceHistory.
     void updateSharePrice() {
         this.price = this.price + (Math.random() - .5);

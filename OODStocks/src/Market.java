@@ -44,7 +44,7 @@ public class Market {
     }
 
     //Start Iterator Pattern
-    //MarketStocks function will be used to disaplay the list of all of the items in the market
+    //MarketStocks function will be used to display the list of all of the items in the market
     public Iterator getStocks() { return new MarketStocks(); }
 
     private class MarketStocks implements Iterator {
@@ -68,7 +68,7 @@ public class Market {
             return false;
         }
     }
-//End Iterator Pattern
+    //End Iterator Pattern
     
     //Getting a Market, which acts as a singleton.
     static Market getMarket(){
@@ -89,8 +89,8 @@ public class Market {
         this.shareAvailability.put(this.stocks.get(temp[0]).getSymbol(), temp);
     }
 
-    //Selling shares to the investor's portfolio.
-    public void sellShares(String symbol, int count){
+    //Buying shares for the investor's portfolio.
+    public void buyShares(String symbol, int count){
         Stock temp = stocks.get(shareAvailability.get(symbol)[0]);
         Scanner input = new Scanner(System.in);
 
@@ -98,12 +98,19 @@ public class Market {
             System.out.printf("Stock does not exist.\n");
             return;
         }
+
+        //Checking to make sure you're not purchasing more shares than exist. That'd be bad.
         if(shareAvailability.get(symbol)[1] < count){
             System.out.printf("You are attempting to purchase more stock than is available.\nWould you like to purchase" +
                     "all available stock?\nY or N.\n");
             if(input.next().equals("N")){
                 System.out.printf("Returning to previous state.\n");
+                input.close();
+                return;
             }
+            investor.purchaseShares(temp, shareAvailability.get(symbol)[1], temp.getPrice() * shareAvailability.get(symbol)[1]);
+            input.close();
+            return;
         }
 
         investor.purchaseShares(temp, count, temp.getPrice() * count);

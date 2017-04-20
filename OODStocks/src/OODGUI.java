@@ -11,14 +11,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.HPos;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.text.*;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
-import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -44,6 +41,7 @@ public class OODGUI extends Application {
 	public void start(Stage stage){
 		TheGUI(stage);
 	}
+
 	//The user interface is actually built in this method.
 	private void TheGUI(Stage stage){
 
@@ -57,8 +55,6 @@ public class OODGUI extends Application {
 			Stock tempStock = (Stock) stocks.next();
 			stockListing.add(tempStock);
 		}
-		int balanceVar = 10000;
-		int holdingVar = 0;
 
 		//This is where everything is positioned for the GUI
 		GridPane root = new GridPane();
@@ -90,124 +86,139 @@ public class OODGUI extends Application {
 		marketchart.setTitle("Total Market Value Over Time");
 		marketchart.setCreateSymbols(false);
 
-		//XYChart is the actual stored number info that is fed into the linechart
+		//XYChart is the actual stored number info that is fed into the lineChart
 		XYChart.Series<Number,Number> marketchartdata = new XYChart.Series<Number,Number>();
 		marketchartdata.setName("Market Value");
 
-		//The area for setting the (x,y) (Day,Value) values for our linechart
+		//The area for setting the (x,y) (Day,Value) values for our lineChart
 		//Any method that returns an integer is able to utilized in place of the placeholder #'s (1-10)
 
 
-		//This actually adds the data from above to the linechart.
+		//This actually adds the data from above to the lineChart.
 		marketchart.getData().add(marketchartdata);
 		
-		// manipulate the below to allow listview and linechart to expand with window
-		ColumnConstraints Ccons1 = new ColumnConstraints();
-		Ccons1.setHgrow(Priority.NEVER);
-		ColumnConstraints Ccons2 = new ColumnConstraints();
-		Ccons2.setHgrow(Priority.ALWAYS);
+		// manipulate the below to allow listView and lineChart to expand with window
+		ColumnConstraints cCons1 = new ColumnConstraints();
+		cCons1.setHgrow(Priority.NEVER);
+		ColumnConstraints cCons2 = new ColumnConstraints();
+		cCons2.setHgrow(Priority.ALWAYS);
 		
-		root.getColumnConstraints().addAll(Ccons1, Ccons1, Ccons1, Ccons1, Ccons2);
+		root.getColumnConstraints().addAll(cCons1, cCons1, cCons1, cCons1, cCons2);
 		
-		RowConstraints Rcons1 = new RowConstraints();
-		Rcons1.setVgrow(Priority.NEVER);
-		RowConstraints Rcons2 = new RowConstraints();
-		Rcons2.setVgrow(Priority.ALWAYS);
+		RowConstraints rCons1 = new RowConstraints();
+		rCons1.setVgrow(Priority.NEVER);
+		RowConstraints rCons2 = new RowConstraints();
+		rCons2.setVgrow(Priority.ALWAYS);
 		
-		root.getRowConstraints().addAll(Rcons1, Rcons2);
+		root.getRowConstraints().addAll(rCons1, rCons2);
 		// manipulate the zbove to allow listview and linechart to expand with window
 		
 		//The labels for balance and holdings that sit on the bottom of GUI
 		Label dayCounter = new Label("Day: 0");
 		dayCounter.setFont(Font.font("TImes New Roman", FontWeight.NORMAL, 20));
-		Label balancelbl = new Label("Balance:");
-		balancelbl.setFont(Font.font("TImes New Roman", FontWeight.NORMAL, 20));
-		Label holdinglbl = new Label("Holdings:");
-		holdinglbl.setFont(Font.font("TImes New Roman", FontWeight.NORMAL, 20));
+		Label balanceLbl = new Label("Balance:");
+		balanceLbl.setFont(Font.font("TImes New Roman", FontWeight.NORMAL, 20));
+		Label holdingsLbl = new Label("Holdings:");
+		holdingsLbl.setFont(Font.font("TImes New Roman", FontWeight.NORMAL, 20));
 
 		//The fields that take variables and represent balance and holdings of the GUI user.
-		Text balance = new Text("" + balanceVar);
-		Text holdings = new Text("" + holdingVar);
+		Text balance = new Text("" + market.getInvestor().getBalance());
+		Text holdings = new Text("" + market.getInvestor().getHoldings());
 
 		//'stockinput' is a placeholder below, though it might be used as a copy
 		//from another method if that is easier to translate/transfer.
 		//observablelist is used so that as it is changed, so is the listview output.
 		ListView<String> marketview = new ListView<String>();
-			//possibly put this in OODFinal and just use 'class.method' for setItems()
-		ObservableList<String> stockinput = FXCollections.observableArrayList();
-		ObservableList<String> top5input = FXCollections.observableArrayList();
-		ObservableList<String> bot10input = FXCollections.observableArrayList();
-		ObservableList<String> yourinput = FXCollections.observableArrayList();
+        //possibly put this in OODFinal and just use 'class.method' for setItems()
+		ObservableList<String> stockInput = FXCollections.observableArrayList();
+		ObservableList<String> top5Input = FXCollections.observableArrayList();
+		ObservableList<String> bot10Input = FXCollections.observableArrayList();
+		ObservableList<String> yourInput = FXCollections.observableArrayList();
+
+		stockInput.add(stockListing.get(0).forList());
 
 		//these for loops make calls to external methods that add single lines at a time.
-		stockinput.add("Name    \tGrowth\tNow    \tHigh    \tLow");
+		stockInput.add("Name    \tGrowth\tNow    \tHigh    \tLow");
 		 //sets list to have items before a button is pressed.
 
 		//A button is created and mnemonic parsing activated so '_' doesn't show.
 		// '_' means the next character+alt activates btn.
 		//The text on btn is set then its event->action assigned.
 		//A tooltip is created, then install(x) assigns it to x button.
-		Button marketbtn = new Button();
-		marketbtn.setMnemonicParsing(true);
-		marketbtn.setText("_Market");
-		marketbtn.setOnAction((ActionEvent event) -> {marketview.setItems(stockinput);});
-		Tooltip tooltip0 = new Tooltip("Shows the current market selection of stocks.");
-		Tooltip.install(marketbtn, tooltip0);
+		Button marketBtn = new Button();
+		marketBtn.setMnemonicParsing(true);
+		marketBtn.setText("_Market");
+		marketBtn.setOnAction((ActionEvent event) -> {marketview.setItems(stockInput);});
+		Tooltip marketTip = new Tooltip("Shows the current market selection of stocks.");
+		Tooltip.install(marketBtn, marketTip);
 		
-		Button top5btn = new Button();
-		top5btn.setMnemonicParsing(true);
-		top5btn.setText("Top _5 Climbing");
-			//replace 'stockinput' with the top 5 stocks list from exterior method
-		top5btn.setOnAction((ActionEvent event) -> {marketview.setItems(top5input);});
-		Tooltip tooltip1 = new Tooltip("Selects the currently fasting climbing 5 stocks.");
-		Tooltip.install(top5btn, tooltip1);
+		Button top5Btn = new Button();
+		top5Btn.setMnemonicParsing(true);
+		top5Btn.setText("Top _5 Climbing");
+        //replace 'stockinput' with the top 5 stocks list from exterior method
+		top5Btn.setOnAction((ActionEvent event) -> {marketview.setItems(top5Input);});
+		Tooltip topFiveTip = new Tooltip("Selects the currently fasting climbing 5 stocks.");
+		Tooltip.install(top5Btn, topFiveTip);
 		
-		Button bot10btn = new Button();
-		bot10btn.setMnemonicParsing(true);
-		bot10btn.setText("Bottom _10 Falling");
-			//replace 'stockinput' with the bot 10 stocks list from exterior method
-		bot10btn.setOnAction((ActionEvent event) -> {marketview.setItems(bot10input);});
-		Tooltip tooltip2 = new Tooltip("Selects the currently fastest falling 10 stocks.");
-		Tooltip.install(bot10btn, tooltip2);
+		Button bot10Btn = new Button();
+		bot10Btn.setMnemonicParsing(true);
+		bot10Btn.setText("Bottom _10 Falling");
+
+		//replace 'stockInput' with the bot 10 stocks list from exterior method
+		bot10Btn.setOnAction((ActionEvent event) -> {marketview.setItems(bot10Input);});
+		Tooltip botTenTip = new Tooltip("Selects the currently fastest falling 10 stocks.");
+		Tooltip.install(bot10Btn, botTenTip);
 		
-		Button yourbtn = new Button();
-		yourbtn.setMnemonicParsing(true);
-		yourbtn.setText("Your _Stocks");
-			//replace 'stockinput' with your stocks list from exterior method
-		yourbtn.setOnAction((ActionEvent event) -> {marketview.setItems(yourinput);});
-		Tooltip tooltip3 = new Tooltip("Selects the list of stocks that you own.");
-		Tooltip.install(yourbtn, tooltip3);
+		Button yourBtn = new Button();
+		yourBtn.setMnemonicParsing(true);
+		yourBtn.setText("Your _Stocks");
+
+		//replace 'stockInput' with your stocks list from exterior method
+		yourBtn.setOnAction((ActionEvent event) -> {marketview.setItems(yourInput);});
+		Tooltip yourTip = new Tooltip("Selects the list of stocks that you own.");
+		Tooltip.install(yourBtn, yourTip);
 		
-		Button buybtn = new Button();
-		buybtn.setMnemonicParsing(true);
-		buybtn.setText("_Buy");
-			//need to change this action to actually buying stocks
-		buybtn.setOnAction((ActionEvent event) -> {
+		Button buyBtn = new Button();
+		buyBtn.setMnemonicParsing(true);
+		buyBtn.setText("_Buy");
+
+		//need to change this action to actually buying stocks
+		buyBtn.setOnAction((ActionEvent event) -> {
 			String temp = marketview.getSelectionModel().getSelectedItem();
-			yourinput.add(temp);
+			yourInput.add(temp);
 			String[] tokens = temp.split("\\s\\s\\s\\s\t");
+
 			double tempBalanceVar = Double.parseDouble(balance.getText());
 			tempBalanceVar -= (Double.parseDouble(tokens[2]));
 
-			balance.setText("" + format.format(tempBalanceVar));
+			TextInputDialog dialog = new TextInputDialog("0000");
+			dialog.setTitle("Purchasing" + tokens[0]);
+			dialog.setContentText("How many shares of " + tokens[0] + " would you like to purchase?");
+
+			Optional<String> result = dialog.showAndWait();
+
+			result.ifPresent(count -> market.buyShares(tokens[0], Integer.parseInt(count)));
+
+			balance.setText("" + format.format(market.getInvestor().getBalance()));
 		}
 
 		);
-		Tooltip tooltip4 = new Tooltip("Click to purchase selected stock.");
-		Tooltip.install(buybtn, tooltip4);
 
-		Button daybtn = new Button();
-		daybtn.setMnemonicParsing(true);
-		daybtn.setText("Next Day");
-		daybtn.setOnAction((ActionEvent) -> {
+		Tooltip buyTip = new Tooltip("Click to purchase selected stock.");
+		Tooltip.install(buyBtn, buyTip);
+
+		Button dayBtn = new Button();
+		dayBtn.setMnemonicParsing(true);
+		dayBtn.setText("Next Day");
+		dayBtn.setOnAction((ActionEvent) -> {
 			//anything the next day button wants to do goes here.
 			String temp = dayCounter.getText();
 			String[] tokens = temp.split(":\\s");
 
 			int day = Integer.parseInt(tokens[1]);
-			stockinput.clear();
-			top5input.clear();
-			bot10input.clear();
+			stockInput.clear();
+			top5Input.clear();
+			bot10Input.clear();
 			market.createStock();
 			market.updateMarket();
 			Iterator updateStocks = market.getStocks();
@@ -215,50 +226,52 @@ public class OODGUI extends Application {
 			ArrayList<Stock> growthSort = new ArrayList<>();
 			marketchartdata.getData().add(new XYChart.Data<Number, Number>(day, (double) market.getTotalValue().get(market.getTotalValue().size()-1)));
 
-			stockinput.add("Name    \tGrowth\tNow    \tHigh    \tLow");
+			stockInput.add("Name    \tGrowth\tNow    \tHigh    \tLow");
+
+			//When using an iterator, it is generally understand that you use one .next per loop.
+            //Otherwise, you skip things.
+            //And wind up sorting a disjoint set from your market.
 			while (updateStocks.hasNext()) {
 				newStockListing.add((Stock) updateStocks.next());
-				growthSort.add((Stock) updateStocks.next());
 			}
+			growthSort.addAll(newStockListing);
 			day++;
 			dayCounter.setText("Day: " + day);
 			//need to find a way to sort the stocks by growth so that they can be displayed in the top5 and bottom 10
-			Collections.sort(growthSort, new Comparator<Stock>() {
-				@Override
-				public int compare(Stock o1, Stock o2) {
-					return 0;
-				}
-			});
+			//Fuck it. We're going with a mergeSort.
+            growthSort = einKleinerMergeSortRealisierung(growthSort, new ArrayList<>());
 
-			for(int i=0; i<newStockListing.size(); i++){ stockinput.add(newStockListing.get(i).forList()); }
-			marketview.setItems(stockinput);
-			for(int i=0; i<5; i++){top5input.add(OODFinal.getTop5(i));}
-			for(int i=0; i<10; i++){bot10input.add(OODFinal.getbot10(i));}
+            //Magical for loop goodness.
+			for(int i = 0; i < newStockListing.size(); i++){ stockInput.add(newStockListing.get(i).forList()); }
+			marketview.setItems(stockInput);
+			for(int i = 0; i < growthSort.size() && i < 10; i++){bot10Input.add(growthSort.get(i).forTopFive());}
+			for(int i = growthSort.size() - 1; i > 0 && i > growthSort.size() - 6; --i){top5Input.add(growthSort.get(i).forLowTen());}
 
 		});
-		Tooltip tooltip5 = new Tooltip("Click to iterate to next day.");
-		Tooltip.install(daybtn, tooltip5);
+
+		Tooltip dayTip = new Tooltip("Click to iterate to next day.");
+		Tooltip.install(dayBtn, dayTip);
 
 		//Adding to scene.(child, column start, row start, column width, row length)
-		root2.getChildren().add(marketbtn);
-		root2.getChildren().add(top5btn);
-		root2.getChildren().add(bot10btn);
-		root2.getChildren().add(yourbtn);
-		root3.getChildren().add(balancelbl);
+		root2.getChildren().add(marketBtn);
+		root2.getChildren().add(top5Btn);
+		root2.getChildren().add(bot10Btn);
+		root2.getChildren().add(yourBtn);
+		root3.getChildren().add(balanceLbl);
 		root3.getChildren().add(balance);
-		root3.getChildren().add(holdinglbl);
+		root3.getChildren().add(holdingsLbl);
 		root3.getChildren().add(holdings);
-		root3.getChildren().add(buybtn);
+		root3.getChildren().add(buyBtn);
 		root.add(root2, 0, 0, 5, 1);
 		root.add(root3, 0, 4, 4, 1);
 		root.add(marketview, 0, 1, 4, 3);
 		root.add(marketchart, 4, 1, 2, 3);
-		root.add(daybtn, 6,4, 1,1);
+		root.add(dayBtn, 6,4, 1,1);
 		root.add(dayCounter, 6,1,1,1);
 		
 		
 		//setTitle sets a title for the main window.
-		stage.setTitle("Stateboro Stock Exchange");
+		stage.setTitle("Statesboro Stock Exchange");
 
 		//This adds the scene to the stage.
 		stage.setScene(scene);
@@ -267,4 +280,58 @@ public class OODGUI extends Application {
 		//This is what puts the window on the screen.
 		stage.show();
 	}
+
+	//Weil bin ich wütend, hier ist eine klein Realisierung von MergeSort. Es verbindet von der Boden.
+    public static ArrayList<Stock> einKleinerMergeSortRealisierung(ArrayList<Stock> toSort, ArrayList<Stock> sortHelp){
+        int toSortSize = toSort.size();
+        Stock[] convStock = new Stock[toSortSize];
+        convStock = toSort.toArray(convStock);
+
+        if(toSortSize == 0){
+            return toSort;
+        }
+
+        for(int w = 1; w < toSortSize; w *= 2){
+            for(int i = 0; i < toSortSize; i += 2 * w){
+                sortHelp.addAll(ichVerbindeVonDerBoden(convStock, i, Math.min(i + w, toSortSize), Math.min(i + (2 * w), toSortSize), new Stock[toSortSize]));
+            }
+
+            toSort.clear();
+            toSort.addAll(sortHelp);
+            convStock = toSort.toArray(convStock);
+            sortHelp.clear();
+        }
+
+        return toSort;
+    }
+
+    //Hier, verbinde Ich von der Boden. Es macht eine größer Liste.
+    public static ArrayList<Stock> ichVerbindeVonDerBoden(Stock[] toSort, int iLeft, int iRight, int iEnd, Stock[] sortHelp){
+        int i = iLeft, j = iRight;
+
+        for(int k = iLeft; k < iEnd; ++k){
+            if(j >= iEnd){
+                sortHelp[k] = toSort[i];
+                i += 1;
+            } else if(i < iRight && toSort[j].getPercentGrowth() < toSort[i].getPercentGrowth()){
+                sortHelp[k] = toSort[j];
+                j += 1;
+            } else if (i < iRight && toSort[i].getPercentGrowth() <= toSort[j].getPercentGrowth()){
+                sortHelp[k] = toSort[i];
+                i += 1;
+            } else {
+                sortHelp[k] = toSort[j];
+                j += 1;
+            }
+
+        }
+
+        ArrayList<Stock> sortList = new ArrayList<Stock>();
+        for(int l = 0; l < sortHelp.length; ++l){
+            if(sortHelp[l] != null)
+                sortList.add(sortHelp[l]);
+        }
+
+        return sortList;
+    }
 }
