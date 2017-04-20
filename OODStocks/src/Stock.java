@@ -1,3 +1,5 @@
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 /*
@@ -11,6 +13,7 @@ public class Stock {
     private double sixMoHi, sixMoLo, price, marketCap;
     private int shareCount;
     private ArrayList<Double> priceHistory;
+    private double percentGrowth;
 
     Stock(){
         StringBuilder temp = new StringBuilder();
@@ -24,6 +27,8 @@ public class Stock {
         this.marketCap = shareCount * price;
         this.priceHistory = new ArrayList<Double>();
         this.priceHistory.add(this.price);
+        percentGrowth = 0;
+
     }
 
     String getSymbol() {
@@ -64,5 +69,28 @@ public class Stock {
         }
 
         this.priceHistory.add(this.price);
+        if(priceHistory.size() < 6) {
+            percentGrowth = (priceHistory.get(priceHistory.size()-1) - priceHistory.get(0))/priceHistory.size();
+        } else if (priceHistory.size() > 5) {
+            percentGrowth = (priceHistory.get(priceHistory.size()-1) - priceHistory.get(priceHistory.size()-6))/priceHistory.size();
+        } else {
+            percentGrowth = 0;
+        }
     }
+
+    public String forList() {
+        NumberFormat format = new DecimalFormat("#0.00");
+        return (symbol + "    \t" + format.format(percentGrowth) + "    \t" + format.format(price) + "    \t" + format.format(sixMoHi) + "    \t"  + format.format(sixMoLo));
+    }
+
+    public String forTopFive() {
+        NumberFormat format = new DecimalFormat("#0.00");
+        return (symbol + "    \t" + format.format(percentGrowth) + "    \t" + format.format(price) + "    \t" + format.format(sixMoHi) + "    \t"  + format.format(sixMoLo));
+    }
+
+    public String forLowTen() {
+        NumberFormat format = new DecimalFormat("#0.00");
+        return (symbol + "    \t" + format.format(percentGrowth) + "    \t" +format.format(price) + "    \t" + format.format(sixMoHi) + "    \t"  + format.format(sixMoLo));
+    }
+
 }

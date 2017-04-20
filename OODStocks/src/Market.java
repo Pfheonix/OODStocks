@@ -4,6 +4,7 @@
 
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class Market {
@@ -108,10 +109,6 @@ public class Market {
         investor.purchaseShares(temp, count, temp.getPrice() * count);
 
         input.close();
-    }
-
-    ArrayList getStocks(){
-        return this.stocks;
     }
 
     public HashMap getShareAvailability(){
