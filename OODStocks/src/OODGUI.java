@@ -200,16 +200,14 @@ public class OODGUI extends Application {
 			result.ifPresent(count -> market.buyShares(tokens[0], Integer.parseInt(count)));
 
 			balance.setText("" + format.format(market.getInvestor().getBalance()));
-		}
-
-		);
+		});
 
 		Tooltip buyTip = new Tooltip("Click to purchase selected stock.");
 		Tooltip.install(buyBtn, buyTip);
 
 		Button dayBtn = new Button();
 		dayBtn.setMnemonicParsing(true);
-		dayBtn.setText("Next Day");
+		dayBtn.setText("_Next Day");
 		dayBtn.setOnAction((ActionEvent) -> {
 			//anything the next day button wants to do goes here.
 			String temp = dayCounter.getText();
@@ -219,7 +217,6 @@ public class OODGUI extends Application {
 			stockInput.clear();
 			top5Input.clear();
 			bot10Input.clear();
-			market.createStock();
 			market.updateMarket();
 			Iterator updateStocks = market.getStocks();
 			ArrayList<Stock> newStockListing = new ArrayList<>();
@@ -249,8 +246,49 @@ public class OODGUI extends Application {
 
 		});
 
-		Tooltip dayTip = new Tooltip("Click to iterate to next day.");
-		Tooltip.install(dayBtn, dayTip);
+		Button addBtn = new Button();
+		addBtn.setMnemonicParsing(true);
+		addBtn.setText("_Add Stock");
+		addBtn.setOnAction((ActionEvent) -> {
+			//anything the next day button wants to do goes here.
+			String temp = dayCounter.getText();
+			String[] tokens = temp.split(":\\s");
+
+			int day = Integer.parseInt(tokens[1]);
+			stockInput.clear();
+			top5Input.clear();
+			bot10Input.clear();
+			market.createStock();
+			market.updateMarket();
+			Iterator updateStocks = market.getStocks();
+			ArrayList<Stock> newStockListing = new ArrayList<>();
+			ArrayList<Stock> growthSort = new ArrayList<>();
+			marketchartdata.getData().add(new XYChart.Data<Number, Number>(day, (double) market.getTotalValue().get(market.getTotalValue().size()-1)));
+
+			stockInput.add("Name    \tGrowth\tNow    \tHigh    \tLow");
+
+			//When using an iterator, it is generally understood that you use one .next per loop.
+			//Otherwise, you skip things and wind up sorting a disjoint set from your market.
+			while (updateStocks.hasNext()) {
+				newStockListing.add((Stock) updateStocks.next());
+			}
+			growthSort.addAll(newStockListing);
+			day++;
+			dayCounter.setText("Day: " + day);
+			//need to find a way to sort the stocks by growth so that they can be displayed in the top5 and bottom 10
+			//Fuck it. We're going with a mergeSort.
+			growthSort = einKleinerMergeSortRealisierung(growthSort, new ArrayList<>());
+
+			//Magical for loop goodness.
+			for(int i = 0; i < newStockListing.size(); i++){ stockInput.add(newStockListing.get(i).forList()); }
+			marketview.setItems(stockInput);
+			for(int i = 0; i < growthSort.size() && i < 10; i++){bot10Input.add(growthSort.get(i).forTopFive());}
+			for(int i = growthSort.size() - 1; i > 0 && i > growthSort.size() - 6; --i){top5Input.add(growthSort.get(i).forLowTen());}
+
+		});
+
+		Tooltip addTip = new Tooltip("Click to iterate to add a stock to the next day.");
+		Tooltip.install(addBtn, addTip);
 
 		//Adding to scene.(child, column start, row start, column width, row length)
 		root2.getChildren().add(marketBtn);
@@ -266,6 +304,7 @@ public class OODGUI extends Application {
 		root.add(root3, 0, 4, 4, 1);
 		root.add(marketview, 0, 1, 4, 3);
 		root.add(marketchart, 4, 1, 2, 3);
+		root.add(addBtn, 5,4, 1,1);
 		root.add(dayBtn, 6,4, 1,1);
 		root.add(dayCounter, 6,1,1,1);
 		

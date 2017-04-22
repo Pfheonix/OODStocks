@@ -76,7 +76,7 @@ public class Stock {
         if(priceHistory.size() < 6) {
             percentGrowth = (priceHistory.get(priceHistory.size()-1) - priceHistory.get(0))/priceHistory.size();
         } else if (priceHistory.size() > 5) {
-            percentGrowth = (priceHistory.get(priceHistory.size()-1) - priceHistory.get(priceHistory.size()-6))/priceHistory.size();
+            percentGrowth = (priceHistory.get(priceHistory.size()-1) - priceHistory.get(priceHistory.size()-6))/5;
         } else {
             percentGrowth = 0;
         }

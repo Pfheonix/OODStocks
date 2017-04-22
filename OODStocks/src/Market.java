@@ -91,7 +91,7 @@ public class Market {
 
     //Buying shares for the investor's portfolio.
     public void buyShares(String symbol, int count){
-        Stock temp = stocks.get(shareAvailability.get(symbol)[0]);
+        Stock temp = stocks.get(shareAvailability.get(symbol)[0] - 1);
         Scanner input = new Scanner(System.in);
 
         if(temp == null){
