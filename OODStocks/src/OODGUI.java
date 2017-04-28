@@ -2,14 +2,11 @@
 //http://zetcode.com/gui/javafx/ <- big help for basics
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.HPos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.text.*;
@@ -21,12 +18,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-import javax.tools.Tool;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
@@ -45,7 +40,7 @@ public class OODGUI extends Application {
 	//The user interface is actually built in this method.
 	private void TheGUI(Stage stage){
 
-		NumberFormat format = new DecimalFormat("#0.00");
+		NumberFormat format = new DecimalFormat("#00.00");
 		Market market = Market.getMarket();
 		market.createStock();
 		market.updateMarket();
@@ -83,7 +78,7 @@ public class OODGUI extends Application {
 		NumberAxis yAxis = new NumberAxis();
 		yAxis.setLabel("Value ($)");
 		LineChart<Number,Number> marketchart = new LineChart<Number,Number>(xAxis, yAxis);
-		marketchart.setTitle("Total Market Value Over Time");
+		marketchart.setTitle("Current Market Value");
 		marketchart.setCreateSymbols(false);
 
 		//XYChart is the actual stored number info that is fed into the lineChart
@@ -115,11 +110,11 @@ public class OODGUI extends Application {
 		
 		//The labels for balance and holdings that sit on the bottom of GUI
 		Label dayCounter = new Label("Day: 0");
-		dayCounter.setFont(Font.font("TImes New Roman", FontWeight.NORMAL, 20));
+		dayCounter.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 20));
 		Label balanceLbl = new Label("Balance:");
-		balanceLbl.setFont(Font.font("TImes New Roman", FontWeight.NORMAL, 20));
+		balanceLbl.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 20));
 		Label holdingsLbl = new Label("Holdings:");
-		holdingsLbl.setFont(Font.font("TImes New Roman", FontWeight.NORMAL, 20));
+		holdingsLbl.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 20));
 
 		//The fields that take variables and represent balance and holdings of the GUI user.
 		Text balance = new Text("" + market.getInvestor().getBalance());
@@ -155,7 +150,8 @@ public class OODGUI extends Application {
 		Button top5Btn = new Button();
 		top5Btn.setMnemonicParsing(true);
 		top5Btn.setText("Top _5 Climbing");
-        //replace 'stockinput' with the top 5 stocks list from exterior method
+
+        //replace 'stockInput' with the top 5 stocks list from exterior method
 		top5Btn.setOnAction((ActionEvent event) -> {marketview.setItems(top5Input);});
 		Tooltip topFiveTip = new Tooltip("Selects the currently fasting climbing 5 stocks.");
 		Tooltip.install(top5Btn, topFiveTip);
@@ -182,10 +178,9 @@ public class OODGUI extends Application {
 		buyBtn.setMnemonicParsing(true);
 		buyBtn.setText("_Buy");
 
-		//need to change this action to actually buying stocks
+		//Purchases stocks to the user.
 		buyBtn.setOnAction((ActionEvent event) -> {
 			String temp = marketview.getSelectionModel().getSelectedItem();
-			yourInput.add(temp);
 			String[] tokens = temp.split("\\s\\s\\s\\s\t");
 
 			double tempBalanceVar = Double.parseDouble(balance.getText());
@@ -197,14 +192,18 @@ public class OODGUI extends Application {
 
 			Optional<String> result = dialog.showAndWait();
 
-			result.ifPresent(count -> market.buyShares(tokens[0], Integer.parseInt(count)));
+			result.ifPresent(count -> {market.buyShares(tokens[0], Integer.parseInt(count));
+			    yourInput.add(temp);
+			});
 
 			balance.setText("" + format.format(market.getInvestor().getBalance()));
+			holdings.setText("" + format.format(market.getInvestor().getHoldings()));
 		});
 
 		Tooltip buyTip = new Tooltip("Click to purchase selected stock.");
 		Tooltip.install(buyBtn, buyTip);
 
+		//The next day tells the market to update itself, then requests the updated information, and displays it.
 		Button dayBtn = new Button();
 		dayBtn.setMnemonicParsing(true);
 		dayBtn.setText("_Next Day");
@@ -217,6 +216,7 @@ public class OODGUI extends Application {
 			stockInput.clear();
 			top5Input.clear();
 			bot10Input.clear();
+			yourInput.clear();
 			market.updateMarket();
 			Iterator updateStocks = market.getStocks();
 			ArrayList<Stock> newStockListing = new ArrayList<>();
@@ -224,6 +224,9 @@ public class OODGUI extends Application {
 			marketchartdata.getData().add(new XYChart.Data<Number, Number>(day, (double) market.getTotalValue().get(market.getTotalValue().size()-1)));
 
 			stockInput.add("Name    \tGrowth\tNow    \tHigh    \tLow");
+            top5Input.add("Name    \tGrowth\tNow    \tHigh    \tLow");
+            bot10Input.add("Name    \tGrowth\tNow    \tHigh    \tLow");
+            yourInput.add("Name    \tGrowth\tNow    \tHigh    \tLow    \tOwned");
 
 			//When using an iterator, it is generally understand that you use one .next per loop.
             //Otherwise, you skip things.
@@ -234,15 +237,22 @@ public class OODGUI extends Application {
 			growthSort.addAll(newStockListing);
 			day++;
 			dayCounter.setText("Day: " + day);
-			//need to find a way to sort the stocks by growth so that they can be displayed in the top5 and bottom 10
-			//Fuck it. We're going with a mergeSort.
-            growthSort = einKleinerMergeSortRealisierung(growthSort, new ArrayList<>());
 
-            //Magical for loop goodness.
+			//Sorting an ArrayList designed to reflect Growth rate.
+            growthSort = stockSort(growthSort, new ArrayList<>());
+
+            //Magical for loop goodness which adds to all of the views.
 			for(int i = 0; i < newStockListing.size(); i++){ stockInput.add(newStockListing.get(i).forList()); }
 			marketview.setItems(stockInput);
 			for(int i = 0; i < growthSort.size() && i < 10; i++){bot10Input.add(growthSort.get(i).forTopFive());}
 			for(int i = growthSort.size() - 1; i > 0 && i > growthSort.size() - 6; --i){top5Input.add(growthSort.get(i).forLowTen());}
+			for(int i = 0; i < newStockListing.size(); ++i){
+			    if(market.getInvestor().getOwnedStocks().containsKey(newStockListing.get(i).getSymbol())){
+			        yourInput.add(newStockListing.get(i).forList() + "     \t" + market.getInvestor().getOwnedStocks().get(newStockListing.get(i).getSymbol()));
+                }
+            }
+
+            holdings.setText("" + format.format(market.getInvestor().getHoldings()));
 
 		});
 
@@ -250,7 +260,7 @@ public class OODGUI extends Application {
 		addBtn.setMnemonicParsing(true);
 		addBtn.setText("_Add Stock");
 		addBtn.setOnAction((ActionEvent) -> {
-			//anything the next day button wants to do goes here.
+			//anything the add stock button wants to do goes here.
 			String temp = dayCounter.getText();
 			String[] tokens = temp.split(":\\s");
 
@@ -259,7 +269,6 @@ public class OODGUI extends Application {
 			top5Input.clear();
 			bot10Input.clear();
 			market.createStock();
-			market.updateMarket();
 			Iterator updateStocks = market.getStocks();
 			ArrayList<Stock> newStockListing = new ArrayList<>();
 			ArrayList<Stock> growthSort = new ArrayList<>();
@@ -273,11 +282,12 @@ public class OODGUI extends Application {
 				newStockListing.add((Stock) updateStocks.next());
 			}
 			growthSort.addAll(newStockListing);
-			day++;
 			dayCounter.setText("Day: " + day);
-			//need to find a way to sort the stocks by growth so that they can be displayed in the top5 and bottom 10
-			//Fuck it. We're going with a mergeSort.
-			growthSort = einKleinerMergeSortRealisierung(growthSort, new ArrayList<>());
+
+			//Once again, sorts the stocks.
+            //Seems unnecessary, but should a stock that, technically, has no movement still act as one of the top 5...
+            //You don't want to miss out, do you?
+			growthSort = stockSort(growthSort, new ArrayList<>());
 
 			//Magical for loop goodness.
 			for(int i = 0; i < newStockListing.size(); i++){ stockInput.add(newStockListing.get(i).forList()); }
@@ -287,7 +297,7 @@ public class OODGUI extends Application {
 
 		});
 
-		Tooltip addTip = new Tooltip("Click to iterate to add a stock to the next day.");
+		Tooltip addTip = new Tooltip("Click to iterate to add a stock to the market.");
 		Tooltip.install(addBtn, addTip);
 
 		//Adding to scene.(child, column start, row start, column width, row length)
@@ -310,7 +320,7 @@ public class OODGUI extends Application {
 		
 		
 		//setTitle sets a title for the main window.
-		stage.setTitle("Statesboro Stock Exchange");
+		stage.setTitle("The Boro Stock Exchange");
 
 		//This adds the scene to the stage.
 		stage.setScene(scene);
@@ -320,8 +330,8 @@ public class OODGUI extends Application {
 		stage.show();
 	}
 
-	//Weil bin ich wütend, hier ist eine klein Realisierung von MergeSort. Es verbindet von der Boden.
-    public static ArrayList<Stock> einKleinerMergeSortRealisierung(ArrayList<Stock> toSort, ArrayList<Stock> sortHelp){
+	//A mergesort to allow for growth rate discrimination - i.e. Top 5, Bottom 10.
+    public static ArrayList<Stock> stockSort(ArrayList<Stock> toSort, ArrayList<Stock> sortHelp){
         int toSortSize = toSort.size();
         Stock[] convStock = new Stock[toSortSize];
         convStock = toSort.toArray(convStock);
@@ -332,7 +342,7 @@ public class OODGUI extends Application {
 
         for(int w = 1; w < toSortSize; w *= 2){
             for(int i = 0; i < toSortSize; i += 2 * w){
-                sortHelp.addAll(ichVerbindeVonDerBoden(convStock, i, Math.min(i + w, toSortSize), Math.min(i + (2 * w), toSortSize), new Stock[toSortSize]));
+                sortHelp.addAll(stockSortMerge(convStock, i, Math.min(i + w, toSortSize), Math.min(i + (2 * w), toSortSize), new Stock[toSortSize]));
             }
 
             toSort.clear();
@@ -344,8 +354,8 @@ public class OODGUI extends Application {
         return toSort;
     }
 
-    //Hier, verbinde Ich von der Boden. Es macht eine größer Liste.
-    public static ArrayList<Stock> ichVerbindeVonDerBoden(Stock[] toSort, int iLeft, int iRight, int iEnd, Stock[] sortHelp){
+    //The actual merge method. To change key value, change .getPercentGrowth() to new value getter.
+    public static ArrayList<Stock> stockSortMerge(Stock[] toSort, int iLeft, int iRight, int iEnd, Stock[] sortHelp){
         int i = iLeft, j = iRight;
 
         for(int k = iLeft; k < iEnd; ++k){
